@@ -2,19 +2,17 @@ FROM maven:3.9.6-eclipse-temurin-17 AS build
 
 WORKDIR /app
 
-# Copiamos el pom.xml del backend
+# Copiamos solo el pom primero (cache)
 COPY backend/pom.xml .
 
-# Descargamos dependencias
 RUN mvn dependency:go-offline
 
-# Copiamos el código fuente
+# Copiamos el código fuente REAL
 COPY backend/src ./src
 
-# Compilamos
 RUN mvn clean package -DskipTests
 
-# ---- Runtime ----
+# ---------------- Runtime ----------------
 FROM eclipse-temurin:17-jdk
 WORKDIR /app
 
