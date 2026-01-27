@@ -1,0 +1,43 @@
+# Backend
+target/
+*.jar
+*.war
+*.log
+
+# Maven
+.m2/
+**/.classpath
+**/.project
+**/.settings/
+**/target/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+dist/
+/app-login/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Git
+.git/
+.gitignore

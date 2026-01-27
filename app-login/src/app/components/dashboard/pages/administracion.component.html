@@ -1,0 +1,152 @@
+<div class="container-fluid">
+  <h1 class="mb-4">
+    <i class="bi bi-gear"></i> Administración
+  </h1>
+
+  <!-- Estadísticas -->
+  <div class="row mb-4">
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="stat-card bg-primary">
+        <div class="stat-value">{{ estadisticas.totalUsuarios }}</div>
+        <div class="stat-label">Usuarios</div>
+        <i class="bi bi-people stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="stat-card bg-success">
+        <div class="stat-value">{{ estadisticas.solicitudesActivas }}</div>
+        <div class="stat-label">Solicitudes Activas</div>
+        <i class="bi bi-hourglass-split stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="stat-card bg-warning">
+        <div class="stat-value">{{ estadisticas.reportes }}</div>
+        <div class="stat-label">Reportes</div>
+        <i class="bi bi-file-earmark-text stat-icon"></i>
+      </div>
+    </div>
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="stat-card bg-info">
+        <div class="stat-value">{{ estadisticas.sistemasActivos }}</div>
+        <div class="stat-label">Sistemas Activos</div>
+        <i class="bi bi-cpu stat-icon"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gestión de Usuarios -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+          <h5 class="mb-0">Gestión de Usuarios</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>Usuario</th>
+                  <th>Email</th>
+                  <th>Rol</th>
+                  <th>Estado</th>
+                  <th>Última Actividad</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let usuario of usuarios">
+                  <td>
+                    <strong>{{ usuario.usuario }}</strong>
+                  </td>
+                  <td>{{ usuario.email }}</td>
+                  <td>
+                    <span class="badge bg-secondary">{{ usuario.rol }}</span>
+                  </td>
+                  <td>
+                    <span
+                      [class]="'badge bg-' + (usuario.estado === 'activo' ? 'success' : 'danger')"
+                    >
+                      {{ usuario.estado === 'activo' ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+                  <td>
+                    <small class="text-muted">{{ usuario.ultimaActividad }}</small>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-sm btn-warning me-2"
+                      (click)="cambiarEstado(usuario)"
+                      [title]="usuario.estado === 'activo' ? 'Desactivar' : 'Activar'"
+                    >
+                      <i [class]="'bi bi-' + (usuario.estado === 'activo' ? 'toggle-on' : 'toggle-off')"></i>
+                    </button>
+                    <button
+                      class="btn btn-sm btn-danger"
+                      (click)="eliminarUsuario(usuario.id)"
+                      title="Eliminar"
+                    >
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Panel de Control -->
+  <div class="row mt-4">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Configuración del Sistema</h5>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-shield-check"></i> Copias de Seguridad
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-wrench"></i> Mantenimiento
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-gear"></i> Configuración General
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-shield-lock"></i> Seguridad
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h5 class="mb-0">Reportes y Logs</h5>
+        </div>
+        <div class="card-body">
+          <div class="list-group">
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-graph-up"></i> Reportes de Actividad
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-exclamation-triangle"></i> Errores del Sistema
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-clock-history"></i> Historial de Cambios
+            </a>
+            <a href="#" class="list-group-item list-group-item-action">
+              <i class="bi bi-eye"></i> Auditoría
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

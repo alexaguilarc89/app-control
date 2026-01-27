@@ -1,0 +1,92 @@
+<div class="container-fluid">
+  <h1 class="mb-4">
+    <i class="bi bi-graph-up"></i> Seguimiento
+  </h1>
+
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h5 class="mb-0">Estado de tus Solicitudes</h5>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div *ngFor="let seg of seguimientos" class="col-md-6 col-lg-4 mb-3">
+              <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h6 class="card-title mb-0">{{ seg.registro }}</h6>
+                    <span [class]="'badge bg-' + getEstadoClass(seg.estado)">
+                      {{ getEstadoText(seg.estado) }}
+                    </span>
+                  </div>
+
+                  <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                      <small class="text-muted">Progreso</small>
+                      <small class="fw-bold">{{ seg.progreso }}%</small>
+                    </div>
+                    <div class="progress">
+                      <div
+                        class="progress-bar"
+                        [ngClass]="{
+                          'bg-warning': seg.estado === 'pendiente',
+                          'bg-info': seg.estado === 'en-proceso',
+                          'bg-success': seg.estado === 'completado'
+                        }"
+                        [style.width.%]="seg.progreso"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <small class="text-muted d-block mb-2">
+                    <i class="bi bi-calendar"></i> {{ seg.fecha }}
+                  </small>
+                  <p class="card-text mb-0">
+                    <small>{{ seg.observaciones }}</small>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="mb-0">Historial de Actividades</h5>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="timeline-marker bg-success"></div>
+              <div class="timeline-content">
+                <h6>Solicitud completada</h6>
+                <p class="text-muted small">2024-01-08 - Solicitud #003 fue procesada exitosamente</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker bg-info"></div>
+              <div class="timeline-content">
+                <h6>Solicitud en proceso</h6>
+                <p class="text-muted small">2024-01-12 - Solicitud #002 está siendo revisada</p>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-marker bg-warning"></div>
+              <div class="timeline-content">
+                <h6>Nueva solicitud</h6>
+                <p class="text-muted small">2024-01-10 - Solicitud #001 fue registrada</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

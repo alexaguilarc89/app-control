@@ -1,0 +1,64 @@
+<div class="dashboard-container">
+  <!-- Topbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <div class="container-fluid">
+      <button 
+        class="btn btn-outline-light me-3" 
+        (click)="toggleSidebar()"
+        title="Toggle sidebar"
+      >
+        <i class="bi bi-list"></i>
+      </button>
+      <a class="navbar-brand fw-bold" href="#">
+        <i class="bi bi-app-indicator"></i> Dashboard
+      </a>
+      <button 
+        class="navbar-toggler" 
+        type="button" 
+        data-bs-toggle="collapse" 
+        data-bs-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="ms-auto d-flex align-items-center">
+          <span class="text-light me-3">
+            <i class="bi bi-person-circle"></i> {{ currentUsername }}
+          </span>
+          <button 
+            class="btn btn-outline-danger" 
+            (click)="logout()"
+          >
+            <i class="bi bi-box-arrow-right"></i> Salir
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <nav class="sidebar" [class.open]="sidebarOpen">
+      <div class="sidebar-header">
+        <h5 class="mb-0">Menú</h5>
+      </div>
+      <ul class="nav flex-column">
+        <li class="nav-item" *ngFor="let item of navItems">
+          <a 
+            class="nav-link" 
+            [class.active]="activeRoute === item.route"
+            (click)="navigateTo(item.route); $event.preventDefault()"
+          >
+            <i [class]="'bi ' + item.icon"></i>
+            <span class="nav-text">{{ item.label }}</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

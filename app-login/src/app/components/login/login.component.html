@@ -1,0 +1,76 @@
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card shadow p-5" style="width: 100%; max-width: 400px;">
+    <h2 class="text-center mb-4 text-dark">Inicio de Sesión</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ errorMessage }}
+        <button type="button" class="btn-close" (click)="errorMessage = ''"></button>
+      </div>
+
+      <!-- Username Field -->
+      <div class="mb-3">
+        <label for="username" class="form-label">Usuario</label>
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          formControlName="username"
+          [class.is-invalid]="submitted && f['username'].invalid"
+          placeholder="Ingresa tu usuario"
+        />
+        <div *ngIf="submitted && f['username'].invalid" class="invalid-feedback d-block">
+          <small *ngIf="f['username'].errors?.['required']">El usuario es requerido</small>
+          <small *ngIf="f['username'].errors?.['minlength']">El usuario debe tener al menos 3 caracteres</small>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="mb-4">
+        <label for="password" class="form-label">Contraseña</label>
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          formControlName="password"
+          [class.is-invalid]="submitted && f['password'].invalid"
+          placeholder="Ingresa tu contraseña"
+        />
+        <div *ngIf="submitted && f['password'].invalid" class="invalid-feedback d-block">
+          <small *ngIf="f['password'].errors?.['required']">La contraseña es requerida</small>
+          <small *ngIf="f['password'].errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</small>
+        </div>
+      </div>
+
+      <!-- Buttons -->
+      <div class="d-grid gap-2">
+        <button
+          type="submit"
+          class="btn btn-primary btn-lg mb-2"
+          [disabled]="loading"
+        >
+          <span *ngIf="!loading">Ingresar</span>
+          <span *ngIf="loading">
+            <span class="spinner-border spinner-border-sm me-2" aria-hidden="true"></span>
+            Procesando...
+          </span>
+        </button>
+        <button
+          type="button"
+          class="btn btn-secondary btn-lg"
+          (click)="onCancel()"
+          [disabled]="loading"
+        >
+          Cancelar
+        </button>
+      </div>
+    </form>
+
+    <!-- Footer -->
+    <hr class="my-4" />
+    <p class="text-center text-muted small">
+      Usuario de prueba: <strong>admin</strong> | Contraseña: <strong>123456</strong>
+    </p>
+  </div>
+</div>

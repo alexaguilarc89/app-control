@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sectorista-backend
+    runtime: java
+    plan: free
+    buildCommand: cd backend && mvn clean package -DskipTests
+    startCommand: java -jar target/sectorista-backend-*.jar
+    envVars:
+      - key: SPRING_DATASOURCE_URL
+        value: jdbc:postgresql://db.hhprnfycfjqjsstkukit.supabase.co:5432/postgres
+      - key: SPRING_DATASOURCE_USERNAME
+        value: postgres
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: SPRING_JPA_HIBERNATE_DDL_AUTO
+        value: none
+      - key: SPRING_JPA_DATABASE_PLATFORM
+        value: org.hibernate.dialect.PostgreSQLDialect
+      - key: JAVA_OPTS
+        value: -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0
+
+  - type: web
+    name: sectorista-frontend
+    runtime: node
+    plan: free
+    buildCommand: cd app-login && npm ci && npm run build
+    startCommand: npx serve -s dist/app-login/browser -l 3000
+    envVars:
+      - key: API_BASE_URL
+        value: https://sectorista-backend.onrender.com/api
