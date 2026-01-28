@@ -2,6 +2,7 @@ package com.sectorista.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -10,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 @Slf4j
+@Profile("dev")
 @Component
 public class DatabaseConnectionTest implements CommandLineRunner {
 
