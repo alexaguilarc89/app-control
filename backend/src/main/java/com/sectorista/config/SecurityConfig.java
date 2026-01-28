@@ -26,11 +26,13 @@ public class SecurityConfig {
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/swagger-ui/**").permitAll()
                 .requestMatchers("/v3/api-docs/**").permitAll()
+                .requestMatchers("/actuator/**").permitAll()
                 // Permitir OPTIONS para preflight CORS
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .anyRequest().permitAll() // Permitir todas las demás peticiones
+                .anyRequest().permitAll()
             )
-            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()));
+            .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable()))
+            .securityMatcher("/**");
 
         return http.build();
     }
