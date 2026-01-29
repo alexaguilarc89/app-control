@@ -8,8 +8,10 @@ import com.sectorista.dto.EntidadDTO;
 import com.sectorista.repository.SectoristaRepository;
 import com.sectorista.repository.EntidadRepository;
 import com.sectorista.repository.SectoristaEntidadRepository;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,28 +22,41 @@ public class SectoristaService {
     private final EntidadRepository entidadRepository;
     private final SectoristaEntidadRepository sectoristaEntidadRepository;
 
-    public SectoristaService(SectoristaRepository sectoristaRepository,
-                            EntidadRepository entidadRepository,
-                            SectoristaEntidadRepository sectoristaEntidadRepository) {
+    public SectoristaService(
+            SectoristaRepository sectoristaRepository,
+            EntidadRepository entidadRepository,
+            SectoristaEntidadRepository sectoristaEntidadRepository) {
         this.sectoristaRepository = sectoristaRepository;
         this.entidadRepository = entidadRepository;
         this.sectoristaEntidadRepository = sectoristaEntidadRepository;
     }
 
+    // =========================
+    // READ
+    // =========================
+
+    @Transactional(readOnly = true)
     public List<SectoristaDTO> getAllSectoristas() {
-        return sectoristaRepository.findAll().stream()
+        return sectoristaRepository.findAll()
+                .stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public SectoristaDTO getSectoristaById(Long id) {
         Sectorista sectorista = sectoristaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sectorista no encontrado"));
         return toDTO(sectorista);
     }
 
+    // =========================
+    // CREATE
+    // =========================
+
     @Transactional
     public SectoristaDTO createSectorista(SectoristaDTO dto) {
+
         Sectorista sectorista = new Sectorista();
         sectorista.setNombres(dto.getNombres());
         sectorista.setApellidos(dto.getApellidos());
@@ -52,24 +67,18 @@ public class SectoristaService {
 
         Sectorista saved = sectoristaRepository.save(sectorista);
 
-        // Agregar entidades si existen
-        if (dto.getEntidades() != null && !dto.getEntidades().isEmpty()) {
-            for (EntidadDTO entidadDTO : dto.getEntidades()) {
-                Entidad entidad = entidadRepository.findById(entidadDTO.getId())
-                        .orElseThrow(() -> new RuntimeException("Entidad no encontrada"));
-                
-                SectoristaEntidad se = new SectoristaEntidad();
-                se.setSectorista(saved);
-                se.setEntidad(entidad);
-                sectoristaEntidadRepository.save(se);
-            }
-        }
+        saveEntidades(saved, dto.getEntidades());
 
         return toDTO(saved);
     }
 
+    // =========================
+    // UPDATE
+    // =========================
+
     @Transactional
     public SectoristaDTO updateSectorista(Long id, SectoristaDTO dto) {
+
         Sectorista sectorista = sectoristaRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Sectorista no encontrado"));
 
@@ -82,42 +91,63 @@ public class SectoristaService {
 
         Sectorista updated = sectoristaRepository.save(sectorista);
 
-        // Actualizar entidades
-        sectoristaEntidadRepository.deleteBySectoristaId(id);
-        
-        if (dto.getEntidades() != null && !dto.getEntidades().isEmpty()) {
-            for (EntidadDTO entidadDTO : dto.getEntidades()) {
-                Entidad entidad = entidadRepository.findById(entidadDTO.getId())
-                        .orElseThrow(() -> new RuntimeException("Entidad no encontrada"));
-                
-                SectoristaEntidad se = new SectoristaEntidad();
-                se.setSectorista(updated);
-                se.setEntidad(entidad);
-                sectoristaEntidadRepository.save(se);
-            }
-        }
+        // Reemplazar relaciones
+        sectoristaEntidadRepository.deleteBySectorista_Id(id);
+        saveEntidades(updated, dto.getEntidades());
 
         return toDTO(updated);
     }
 
+    // =========================
+    // DELETE
+    // =========================
+
     @Transactional
     public void deleteSectorista(Long id) {
-        sectoristaEntidadRepository.deleteBySectoristaId(id);
+        sectoristaEntidadRepository.deleteBySectorista_Id(id);
         sectoristaRepository.deleteById(id);
     }
 
+    // =========================
+    // PRIVATE HELPERS
+    // =========================
+
+    private void saveEntidades(Sectorista sectorista, List<EntidadDTO> entidades) {
+        if (entidades == null || entidades.isEmpty()) {
+            return;
+        }
+
+        for (EntidadDTO dto : entidades) {
+            Entidad entidad = entidadRepository.findById(dto.getId())
+                    .orElseThrow(() ->
+                            new RuntimeException("Entidad no encontrada con ID: " + dto.getId())
+                    );
+
+            SectoristaEntidad se = new SectoristaEntidad();
+            se.setSectorista(sectorista);
+            se.setEntidad(entidad);
+
+            sectoristaEntidadRepository.save(se);
+        }
+    }
+
     private SectoristaDTO toDTO(Sectorista sectorista) {
-        List<SectoristaEntidad> entidades = sectoristaEntidadRepository
-                .findBySectoristaId(sectorista.getId());
-        
-        List<EntidadDTO> entidadesDTO = entidades.stream()
-                .map(se -> new EntidadDTO(
-                        se.getEntidad().getId(),
-                        se.getEntidad().getNombre(),
-                        se.getEntidad().getDescripcion(),
-                        se.getEntidad().getActiva()
-                ))
-                .collect(Collectors.toList());
+
+        List<SectoristaEntidad> relaciones =
+                sectoristaEntidadRepository.findBySectorista_Id(sectorista.getId());
+
+        List<EntidadDTO> entidadesDTO = relaciones.stream()
+                .filter(se -> se.getEntidad() != null)
+                .map(se -> {
+                    Entidad e = se.getEntidad();
+                    return new EntidadDTO(
+                            e.getId(),
+                            e.getNombre(),
+                            e.getDescripcion(),
+                            e.getActiva()
+                    );
+                })
+                .toList();
 
         return new SectoristaDTO(
                 sectorista.getId(),
