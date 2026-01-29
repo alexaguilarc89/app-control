@@ -91,8 +91,8 @@ public class SectoristaService {
 
         Sectorista updated = sectoristaRepository.save(sectorista);
 
-        // Reemplaza relaciones
-        sectoristaEntidadRepository.deleteBySectoristaId(id);
+        // Reemplaza relaciones correctamente
+        sectoristaEntidadRepository.deleteBySectorista_Id(id);
         saveEntidades(updated, dto.getEntidades());
 
         return toDTO(updated);
@@ -104,7 +104,7 @@ public class SectoristaService {
 
     @Transactional
     public void deleteSectorista(Long id) {
-        sectoristaEntidadRepository.deleteBySectoristaId(id);
+        sectoristaEntidadRepository.deleteBySectorista_Id(id);
         sectoristaRepository.deleteById(id);
     }
 
@@ -129,14 +129,15 @@ public class SectoristaService {
         }
     }
 
+    @Transactional(readOnly = true)
     private SectoristaDTO toDTO(Sectorista sectorista) {
 
         List<SectoristaEntidad> relaciones =
-                sectoristaEntidadRepository.findBySectoristaId(sectorista.getId());
+                sectoristaEntidadRepository.findBySectorista_Id(sectorista.getId());
 
         List<EntidadDTO> entidadesDTO = relaciones.stream()
                 .map(se -> {
-                    Entidad e = se.getEntidad(); // seguro dentro de transacción
+                    Entidad e = se.getEntidad();
                     return new EntidadDTO(
                             e.getId(),
                             e.getNombre(),
