@@ -1,8 +1,7 @@
 import { Component, Inject, PLATFORM_ID, OnInit } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ApiService, EntidadDTO, SectoristaDTO } from '../../../services/api.service';
+import { ApiService, SectoristaDTO, EntidadDTO } from '../../../services/api.service';
 
 @Component({
   selector: 'app-registro',
@@ -16,7 +15,7 @@ export class RegistroComponent implements OnInit {
   submitted = false;
   sectoristas: SectoristaDTO[] = [];
   showModal = false;
-  
+
   entidadesDisponibles: EntidadDTO[] = [];
   entidadesSeleccionadas: EntidadDTO[] = [];
   currentSectorista: SectoristaDTO | null = null;
@@ -47,28 +46,20 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  get f() {
-    return this.sectoristasForm.controls;
-  }
+  get f() { return this.sectoristasForm.controls; }
 
   cargarEntidades(): void {
     this.apiService.getAllEntidades().subscribe(
-      (entidades: EntidadDTO[]) => {
-        this.entidadesDisponibles = entidades;
-        console.log('✅ Entidades cargadas:', entidades);
-      },
-      (error) => {
-        console.error('❌ Error cargando entidades:', error);
-      }
+      (entidades) => this.entidadesDisponibles = entidades,
+      (error) => console.error('❌ Error cargando entidades:', error)
     );
   }
 
   cargarSectoristas(): void {
     this.apiService.getAllSectoristas().subscribe(
-      (sectoristas: SectoristaDTO[]) => {
+      (sectoristas) => {
         this.sectoristas = sectoristas;
         this.isLoading = false;
-        console.log('✅ Sectoristas cargados:', sectoristas);
       },
       (error) => {
         console.error('❌ Error cargando sectoristas:', error);
@@ -81,7 +72,7 @@ export class RegistroComponent implements OnInit {
     this.submitted = true;
     if (this.sectoristasForm.invalid) return;
 
-    const nuevoSectorista: SectoristaDTO = {
+    const nuevo: SectoristaDTO = {
       nombres: this.f['nombres'].value,
       apellidos: this.f['apellidos'].value,
       telefono: this.f['telefono'].value,
@@ -91,19 +82,17 @@ export class RegistroComponent implements OnInit {
       entidades: this.entidadesSeleccionadas
     };
 
-    this.apiService.createSectorista(nuevoSectorista).subscribe(
-      (response: SectoristaDTO) => {
-        console.log('✅ Sectorista creado:', response);
-        this.sectoristas.push(response);
-        this.sectoristasForm.reset();
-        this.sectoristasForm.patchValue({
+    this.apiService.createSectorista(nuevo).subscribe(
+      (resp) => {
+        this.sectoristas.push(resp);
+        this.sectoristasForm.reset({
           unidadOrganica: 'Dirección de Registro de Personal Activo',
           estado: 'Activo'
         });
         this.submitted = false;
         this.entidadesSeleccionadas = [];
       },
-      (error) => console.error('❌ Error:', error)
+      (err) => console.error('❌ Error creando sectorista:', err)
     );
   }
 
@@ -134,13 +123,12 @@ export class RegistroComponent implements OnInit {
         estado: this.f['estado'].value,
         entidades: this.entidadesSeleccionadas
       };
-
       this.apiService.updateSectorista(this.currentSectorista.id, sectorista).subscribe(
-        (response: SectoristaDTO) => {
-          this.sectoristas[this.currentSectoristaIndex] = response;
+        (resp) => {
+          this.sectoristas[this.currentSectoristaIndex] = resp;
           this.cancelarEdicion();
         },
-        (error) => console.error('❌ Error:', error)
+        (err) => console.error('❌ Error actualizando sectorista:', err)
       );
     }
   }
@@ -149,8 +137,7 @@ export class RegistroComponent implements OnInit {
     this.currentSectorista = null;
     this.currentSectoristaIndex = -1;
     this.entidadesSeleccionadas = [];
-    this.sectoristasForm.reset();
-    this.sectoristasForm.patchValue({
+    this.sectoristasForm.reset({
       unidadOrganica: 'Dirección de Registro de Personal Activo',
       estado: 'Activo'
     });
@@ -158,17 +145,12 @@ export class RegistroComponent implements OnInit {
   }
 
   eliminarSectorista(index: number): void {
-    if (confirm('¿Eliminar este sectorista?')) {
-      const id = this.sectoristas[index].id;
-      if (id) {
-        this.apiService.deleteSectorista(id).subscribe(
-          () => {
-            this.sectoristas.splice(index, 1);
-            console.log('✅ Sectorista eliminado');
-          },
-          (error) => console.error('❌ Error:', error)
-        );
-      }
+    const id = this.sectoristas[index].id;
+    if (id && confirm('¿Eliminar este sectorista?')) {
+      this.apiService.deleteSectorista(id).subscribe(
+        () => this.sectoristas.splice(index, 1),
+        (err) => console.error('❌ Error eliminando sectorista:', err)
+      );
     }
   }
 
@@ -188,12 +170,10 @@ export class RegistroComponent implements OnInit {
 
   agregarEntidad(entidad: EntidadDTO): void {
     const existe = this.entidadesSeleccionadas.find(e => e.id === entidad.id);
-    if (!existe) {
-      this.entidadesSeleccionadas.push(entidad);
-    }
+    if (!existe) this.entidadesSeleccionadas.push(entidad);
   }
 
-  eliminarEntidad(id: number | undefined): void {
+  eliminarEntidad(id?: number): void {
     if (id !== undefined) {
       this.entidadesSeleccionadas = this.entidadesSeleccionadas.filter(e => e.id !== id);
     }
@@ -205,20 +185,17 @@ export class RegistroComponent implements OnInit {
         ...this.currentSectorista,
         entidades: this.entidadesSeleccionadas
       };
-
       this.apiService.updateSectorista(this.currentSectorista.id, sectorista).subscribe(
-        (response: SectoristaDTO) => {
-          this.sectoristas[this.currentSectoristaIndex] = response;
+        (resp) => {
+          this.sectoristas[this.currentSectoristaIndex] = resp;
           this.cerrarModal();
         },
-        (error) => console.error('❌ Error:', error)
+        (err) => console.error('❌ Error guardando entidades:', err)
       );
     }
   }
 
   getEntidadesDisponiblesParaAgregar(): EntidadDTO[] {
-    return this.entidadesDisponibles.filter(e => 
-      !this.entidadesSeleccionadas.find(sel => sel.id === e.id)
-    );
+    return this.entidadesDisponibles.filter(e => !this.entidadesSeleccionadas.find(sel => sel.id === e.id));
   }
 }
