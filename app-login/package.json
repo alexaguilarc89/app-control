@@ -1,14 +1,14 @@
 {
   "name": "app-login",
   "version": "0.0.0",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr:app-login": "node dist/app-login/server/server.mjs"
-  },
+"scripts": {
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build --configuration production",
+  "watch": "ng build --watch --configuration development",
+  "test": "ng test",
+  "serve:ssr:app-login": "node dist/app-login/server/server.mjs"
+},
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
