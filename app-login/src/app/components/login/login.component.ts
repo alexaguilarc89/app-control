@@ -19,9 +19,9 @@ export class LoginComponent implements OnInit {
   
   private formBuilder = inject(FormBuilder);
   private authService = inject(AuthService);
-  private router = inject(Router);
+  //private router = inject(Router);
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
