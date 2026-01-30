@@ -1,8 +1,9 @@
 import { Component, Inject, PLATFORM_ID, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ApiService, SectoristaDTO, EntidadDTO } from '../../../services/api.service';
-
+import { ApiService } from '../../../services/api.service';
+import { SectoristaDTO } from '../../../models/sectorista.dto';
+import { EntidadDTO } from '../../../models/entidad.dto';
 @Component({
   selector: 'app-registro',
   standalone: true,
